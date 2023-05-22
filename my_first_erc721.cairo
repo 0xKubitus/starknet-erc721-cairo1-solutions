@@ -23,7 +23,10 @@ mod MyContract {
 
     ////////////////////////////////
     // Storage
-    // struct Storage {  }
+    struct Storage {
+        my_ERC721_name: felt252,
+        my_ERC721_symbol: felt252,
+    }
     ////////////////////////////////
 
 
@@ -32,7 +35,10 @@ mod MyContract {
     // Constructor
 
     #[constructor]
-    // fn constructor() {  }
+    fn constructor(name: felt252, symbol: felt252) {
+        my_ERC721_name::write(name);
+        my_ERC721_symbol::write(symbol);
+    }
     ////////////////////////////////
 
 
@@ -54,7 +60,13 @@ mod MyContract {
     // They can be called by other contracts or externally, and they do not require gas fees as they do not alter the contract’s state.
 
     #[view]
-    // fn view_function_name(: felt252) -> felt252 {  }
+    fn get_name() -> felt252 {
+        my_ERC721_name::read();
+     }
+
+    fn get_symbol() -> felt252 {
+        my_ERC721_symbol::read();
+     }
     ////////////////////////////////
 
 

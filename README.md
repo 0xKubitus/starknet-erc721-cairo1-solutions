@@ -12,6 +12,9 @@ Let's learn how to implement ERC721 tokens in Starknet, using Cairo1 thanks to [
    1. a constructor function that takes the `name` and `symbol` as input and then initializes the contract with those inputs
    2. a `get_name()` to receive the name of the ERC721
    3. a `get_symbol()` to receive the symbol of the ERC721
+
+Hint: You will need to manage the name and symbol of your ERC721 in the Storage of your contract
+
 2. Assign a user slot from the Evaluator contract by calling `assign_user_slot()`
    1. Check the `get_user_slot()` to receive your number
    2. Based on your `user_slot` number, check the `get_info_name()` and `get_info_symbol()` to receive your unique `name` and `symbol`.
