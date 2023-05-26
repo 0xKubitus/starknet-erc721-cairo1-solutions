@@ -6,9 +6,9 @@ mod MyContract {
     // Core Library imports
     // These are syscalls and functionalities that allow you to write Starknet contracts
     // use starknet::get_caller_address;
-    // use starknet::ContractAddress;
-    // use array::ArrayTrait;
-    // use option::OptionTrait;
+    use starknet::ContractAddress;
+    use array::ArrayTrait;
+    use option::OptionTrait;
     ////////////////////////////////
 
 
@@ -16,8 +16,16 @@ mod MyContract {
     ////////////////////////////////
     // Internal imports
     // These functions become part of the set of functions of the contract
-    // use folder_name::other_folder::file::module::function;
+    // for example: `use folder_name::other_folder::file::module::function`;
     ////////////////////////////////
+
+
+
+    #[derive(Copy, Drop)]
+    struct Ex2Token {
+        owner: ContractAddress,
+        id: u256,
+    }
 
 
 
@@ -26,6 +34,7 @@ mod MyContract {
     struct Storage {
         my_ERC721_name: felt252,
         my_ERC721_symbol: felt252,
+        token_owner: LegacyMap::<u256, ContractAddress>,
     }
     ////////////////////////////////
 
@@ -62,12 +71,17 @@ mod MyContract {
     #[view]
     fn get_name() -> felt252 {
         return my_ERC721_name::read();
-     }
+    }
 
     #[view]
     fn get_symbol() -> felt252 {
         return my_ERC721_symbol::read();
-     }
+    }
+
+    #[view]
+    fn owner_of(token_id: u256) -> ContractAddress {
+        return token_owner::read(token_id);
+    }
     ////////////////////////////////
 
 
@@ -77,8 +91,15 @@ mod MyContract {
     // => functions that can be called by other contracts or externally by users through a transaction on the blockchain. 
     // They can write to the contract’s storage using the write function. This means that they can change the contract’s state, and therefore, require gas fees for execution.
 
-    // #[external]
-    // fn external_function_name(: felt252) {  }
+    #[external]
+    fn mint(owner_address: ContractAddress, token_id: u256) {
+        let new_token = Ex2Token {
+            owner: owner_address,
+            id: token_id,
+        };
+
+        token_owner::write(token_id, owner_address);
+    }
     ////////////////////////////////
 
 
