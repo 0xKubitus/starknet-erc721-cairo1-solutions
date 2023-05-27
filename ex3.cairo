@@ -1,12 +1,13 @@
 #[contract]
-
-mod MyContract {
+mod Ex3ERC721byKubi {
 
     ////////////////////////////////
     // Core Library imports
     // These are syscalls and functionalities that allow you to write Starknet contracts
     // use starknet::get_caller_address;
     use starknet::ContractAddress;
+    use starknet::contract_address_const; // built-in function that allows to initiate a dummy contract address
+    use starknet::contract_address_to_felt252;
     use array::ArrayTrait;
     use option::OptionTrait;
     ////////////////////////////////
@@ -22,7 +23,7 @@ mod MyContract {
 
 
     #[derive(Copy, Drop)]
-    struct Ex2Token {
+    struct Ex3Token {
         owner: ContractAddress,
         id: u256,
     }
@@ -99,12 +100,26 @@ mod MyContract {
 
     #[external]
     fn mint(owner_address: ContractAddress, token_id: u256) {
-        let new_token = Ex2Token {
+        // Ensuring token_id is unique
+        let exists = _exists(token_id);
+        assert(exists == false, 'token_id already minted');
+
+        // Create a new token
+        let new_token = Ex3Token {
             owner: owner_address,
             id: token_id,
         };
 
+        // Updating the 'token_owner' list
         token_owner::write(token_id, owner_address);
+        
+        // Updating owner's balance
+        let balance = balances::read(owner_address);
+        let new_balance: u256 = balance + 1_u256; 
+        balances::write(owner_address, new_balance);
+
+        // TODO: Create a 'Transfer' event to be used here (not required to validate the exercise, though)
+
     }
 
     #[external]
@@ -116,11 +131,11 @@ mod MyContract {
         let new_balance: u256 = balance - 1_u256; 
         balances::write(owner, new_balance);
 
-        // Removing ownership of the token
-        token_owner::write(token_id, 0);
+        // Removing ownership of the token by returning it to a null contract address
+        let null_address: ContractAddress = contract_address_const::<0>(); 
+        token_owner::write(token_id, null_address);
 
-        // Transfering token to null address
-        // TODO: Create a 'Transfer' event to be used here
+        // TODO: Create a 'Transfer' event to be used here (not required to validate the exercise, though)
 
     }
     ////////////////////////////////
@@ -130,7 +145,21 @@ mod MyContract {
     ////////////////////////////////
     // Internal functions (they can only be called by other functions within the same contract)
 
-    // fn internal_function_name() {  }
+    fn _exists(token_id: u256) -> bool {
+        let check_token = token_owner::read(token_id);
+        let felt_address = contract_address_to_felt252(check_token);
+
+
+        if felt_address == 0 { 
+            return false;
+        }
+
+        return true;
+    }
     ////////////////////////////////
 
 }
+
+
+
+
