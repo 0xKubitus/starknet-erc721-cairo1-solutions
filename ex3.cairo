@@ -106,6 +106,23 @@ mod MyContract {
 
         token_owner::write(token_id, owner_address);
     }
+
+    #[external]
+    fn burn(token_id: u256) {
+        let owner = owner_of(token_id);
+
+        // Updating owner's balance
+        let balance = balances::read(owner);
+        let new_balance: u256 = balance - 1_u256; 
+        balances::write(owner, new_balance);
+
+        // Removing ownership of the token
+        token_owner::write(token_id, 0);
+
+        // Transfering token to null address
+        // TODO: Create a 'Transfer' event to be used here
+
+    }
     ////////////////////////////////
 
 
