@@ -4,9 +4,10 @@ mod Exercise3 {
     ////////////////////////////////
     // Core Library imports
     // These are syscalls and functionalities that allow you to write Starknet contracts
-    // use starknet::get_caller_address;
+    use starknet::get_caller_address;
     use starknet::ContractAddress;
     use starknet::contract_address_const; 
+    use starknet::contract_address_to_felt252;
     use array::ArrayTrait;
     use option::OptionTrait;
     ////////////////////////////////
@@ -101,15 +102,20 @@ mod Exercise3 {
     #[external]
     fn mint(owner_address: ContractAddress, token_id: u256) {
         
-        // TODO: Step1 - Add verification that token_id is not already assigned to an owner_address
-        // Ensure token_id is unique
-        // let exists = _exists(token_id);
-        // assert(exists == 0, 'token_id already minted'); // <- token_id must not be already matched with an owner address
+        // Ensure that token_id is not already assigned to an owner_address
+        let exists = _exists(token_id);
+        assert(exists == 0, 'token_id already minted'); // <- token_id must not be already matched with an owner address
 
-        // TODO: Step2 - Make sure that the caller is the owner of the contract (do not do this if you want to validate exercise2, but that's a good practice to know for real world use-cases where security is needed)
+        // TODO: Ensure that owner_address is not equal to zero
+        // let address_test = check_address(owner_address);
+        // assert(address_test != 0, 'owner_address cannot be 0');
+
+        ////////////////////////////////
+        // Make sure that the caller is the owner of the contract (do not do this if you want to validate exercise2, but that's a good practice to know for real world use-cases where security is needed)
             // Add an equivalent of "Ownable.assert_only_owner();" from OpenZeppelin standard ERC721 in Cairo 0 
             // see https://github.com/OpenZeppelin/cairo-contracts/blob/release-v0.5.0/src/openzeppelin/token/erc721/presets/ERC721MintableBurnable.cairo
             // and https://github.com/OpenZeppelin/cairo-contracts/blob/release-v0.5.0/src/openzeppelin/access/ownable/library.cairo
+        ////////////////////////////////
 
         // Create a new token
         let new_token = Ex2Token {
@@ -132,6 +138,10 @@ mod Exercise3 {
     fn burn(token_id: u256) {
         let owner = owner_of(token_id);
 
+        // TODO: Ensure that the caller of this function is the owner of the token
+        // let caller_address = get_caller_address();
+        // assert(caller_address == owner, 'caller is not the token owner');
+
         // Updating owner's balance
         let balance = balances::read(owner);
         let new_balance: u256 = balance - 1_u256; 
@@ -150,7 +160,28 @@ mod Exercise3 {
     ////////////////////////////////
     // Internal functions (they can only be called by other functions within the same contract)
 
-    // fn internal_function_name() {  }
+    fn _exists(token_id: u256) -> u256 {
+        // Checking if the token_id has a matching contract address
+        let check_token = token_owner::read(token_id);
+        let felt_address = contract_address_to_felt252(check_token);
+
+        if felt_address == 0 { 
+            return 0;
+        }
+
+        return 1;
+    }
+
+    fn check_address(address: ContractAddress) -> u256 {
+        // Check if the given address is null 
+        let felt_address = contract_address_to_felt252(address);
+
+        if felt_address == 0 { 
+            return 0;
+        }
+
+        return 1;
+    }
     ////////////////////////////////
 
 }

@@ -145,8 +145,8 @@ mod Ex3ERC721byKubi {
     ////////////////////////////////
     // Internal functions (they can only be called by other functions within the same contract)
 
-    // Checking if the token_id has a matching contract address
     fn _exists(token_id: u256) -> u256 {
+        // Checking if the token_id has a matching contract address
         let check_token = token_owner::read(token_id);
         let felt_address = contract_address_to_felt252(check_token);
 
