@@ -102,7 +102,7 @@ mod Ex3ERC721byKubi {
     fn mint(owner_address: ContractAddress, token_id: u256) {
         // Ensuring token_id is unique
         let exists = _exists(token_id);
-        assert(exists == false, 'token_id already minted');
+        assert(exists == 1, 'token_id already minted');
 
         // Create a new token
         let new_token = Ex3Token {
@@ -145,16 +145,16 @@ mod Ex3ERC721byKubi {
     ////////////////////////////////
     // Internal functions (they can only be called by other functions within the same contract)
 
-    fn _exists(token_id: u256) -> bool {
+    fn _exists(token_id: u256) -> u256 {
         let check_token = token_owner::read(token_id);
         let felt_address = contract_address_to_felt252(check_token);
 
-
-        if felt_address == 0 { 
-            return false;
+        // Checking if the token_id has a matching contract address
+        if felt_address != 0 { 
+            return 1;
         }
 
-        return true;
+        return 0;
     }
     ////////////////////////////////
 
