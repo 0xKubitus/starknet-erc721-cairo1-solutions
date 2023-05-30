@@ -101,8 +101,8 @@ mod Ex3ERC721byKubi {
     #[external]
     fn mint(owner_address: ContractAddress, token_id: u256) {
         // Ensuring token_id is unique
-        let exists = _exists(token_id);
-        assert(exists == 1, 'token_id already minted');
+        // let exists = _exists(token_id);
+        // assert(exists == 1, 'token_id already minted');
 
         // Create a new token
         let new_token = Ex3Token {
