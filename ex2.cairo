@@ -34,6 +34,7 @@ mod MyContract {
         my_ERC721_name: felt252,
         my_ERC721_symbol: felt252,
         token_owner: LegacyMap::<u256, ContractAddress>,
+        balances: LegacyMap::<ContractAddress, u256>,
     }
     ////////////////////////////////
 
@@ -82,6 +83,11 @@ mod MyContract {
         return token_owner::read(token_id);
     }
     
+    #[view]
+    fn balance_of(user_address: ContractAddress) -> u256 {
+        return balances::read(user_address);
+    }
+
     ////////////////////////////////
 
 
@@ -98,7 +104,13 @@ mod MyContract {
             id: token_id,
         };
 
+        // Updating the 'token_owner' list
         token_owner::write(token_id, owner_address);
+        
+        // Updating owner's balance
+        let balance = balances::read(owner_address);
+        let new_balance = balance + 1_u256; 
+        balances::write(owner_address, new_balance);
     }
     ////////////////////////////////
 
