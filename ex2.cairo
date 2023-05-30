@@ -1,5 +1,5 @@
 #[contract]
-mod MyContract {
+mod Exercise2 {
 
     ////////////////////////////////
     // Core Library imports
@@ -99,6 +99,13 @@ mod MyContract {
 
     #[external]
     fn mint(owner_address: ContractAddress, token_id: u256) {
+        
+        // TODO: Step1 - Add verification that token_id is not already assigned to an owner_address
+
+        // TODO: Step2 - Add an equivalent of `Ownable.assert_only_owner();` 
+            // see https://github.com/OpenZeppelin/cairo-contracts/blob/release-v0.5.0/src/openzeppelin/token/erc721/presets/ERC721MintableBurnable.cairo
+            // and https://github.com/OpenZeppelin/cairo-contracts/blob/release-v0.5.0/src/openzeppelin/access/ownable/library.cairo
+
         let new_token = Ex2Token {
             owner: owner_address,
             id: token_id,
@@ -111,6 +118,7 @@ mod MyContract {
         let balance = balances::read(owner_address);
         let new_balance = balance + 1_u256; 
         balances::write(owner_address, new_balance);
+
     }
     ////////////////////////////////
 
