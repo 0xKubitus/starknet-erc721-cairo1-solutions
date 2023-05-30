@@ -23,7 +23,7 @@ mod Exercise3 {
 
 
     #[derive(Copy, Drop)]
-    struct Ex2Token {
+    struct Ex3Token {
         owner: ContractAddress,
         id: u256,
     }
@@ -107,8 +107,8 @@ mod Exercise3 {
         assert(exists == 0, 'token_id already minted'); // <- token_id must not be already matched with an owner address
 
         // TODO: Ensure that owner_address is not equal to zero
-        // let address_test = check_address(owner_address);
-        // assert(address_test != 0, 'owner_address cannot be 0');
+        let address_test = check_address(owner_address);
+        assert(address_test != 0, 'owner_address cannot be 0');
 
         ////////////////////////////////
         // Make sure that the caller is the owner of the contract (do not do this if you want to validate exercise2, but that's a good practice to know for real world use-cases where security is needed)
@@ -118,7 +118,7 @@ mod Exercise3 {
         ////////////////////////////////
 
         // Create a new token
-        let new_token = Ex2Token {
+        let new_token = Ex3Token {
             owner: owner_address,
             id: token_id,
         };
@@ -139,8 +139,8 @@ mod Exercise3 {
         let owner = owner_of(token_id);
 
         // TODO: Ensure that the caller of this function is the owner of the token
-        // let caller_address = get_caller_address();
-        // assert(caller_address == owner, 'caller is not the token owner');
+        let caller_address = get_caller_address();
+        assert(caller_address == owner, 'caller is not the token owner');
 
         // Updating owner's balance
         let balance = balances::read(owner);
