@@ -101,20 +101,25 @@ mod Exercise2 {
     fn mint(owner_address: ContractAddress, token_id: u256) {
         
         // TODO: Step1 - Add verification that token_id is not already assigned to an owner_address
+        // Ensure token_id is unique
+        // let exists = _exists(token_id);
+        // assert(exists == 0, 'token_id already minted'); // <- token_id must not be already matched with an owner address
 
-        // TODO: Step2 - Add an equivalent of `Ownable.assert_only_owner();` 
+        // TODO: Step2 - Make sure that the caller is the owner of the contract (do not do this if you want to validate exercise2, but that's a good practice to know for real world use-cases where security is needed)
+            // Add an equivalent of "Ownable.assert_only_owner();" from OpenZeppelin standard ERC721 in Cairo 0 
             // see https://github.com/OpenZeppelin/cairo-contracts/blob/release-v0.5.0/src/openzeppelin/token/erc721/presets/ERC721MintableBurnable.cairo
             // and https://github.com/OpenZeppelin/cairo-contracts/blob/release-v0.5.0/src/openzeppelin/access/ownable/library.cairo
 
+        // Create a new token
         let new_token = Ex2Token {
             owner: owner_address,
             id: token_id,
         };
 
-        // Updating the 'token_owner' list
+        // Update the 'token_owner' list
         token_owner::write(token_id, owner_address);
         
-        // Updating owner's balance
+        // Update owner's balance
         let balance = balances::read(owner_address);
         let new_balance = balance + 1_u256; 
         balances::write(owner_address, new_balance);
