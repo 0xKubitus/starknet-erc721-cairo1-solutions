@@ -37,6 +37,7 @@ mod Exercise3 {
         my_ERC721_symbol: felt252,
         token_owner: LegacyMap::<u256, ContractAddress>,
         balances: LegacyMap::<ContractAddress, u256>,
+        token_approvals: LegacyMap<u256, ContractAddress>,
     }
     ////////////////////////////////
 
@@ -90,6 +91,12 @@ mod Exercise3 {
         return balances::read(user_address);
     }
 
+    #[view]
+    fn get_approved(token_id: u256) -> ContractAddress {
+        assert(_exists(token_id), 'ERC721: invalid token ID');
+        token_approvals::read(token_id)
+    }
+
     ////////////////////////////////
 
 
@@ -98,6 +105,17 @@ mod Exercise3 {
     // External functions
     // => functions that can be called by other contracts or externally by users through a transaction on the blockchain. 
     // They can write to the contract’s storage using the write function. This means that they can change the contract’s state, and therefore, require gas fees for execution.
+
+    #[external]
+    fn approve(to: ContractAddress, token_id: u256) {
+        let owner = _owner_of(token_id);
+
+        let caller = get_caller_address();
+        assert(
+            owner == caller | is_approved_for_all(owner, caller), 'ERC721: unauthorized caller'
+        );
+        _approve(to, token_id);
+    }
 
     #[external]
     fn mint(owner_address: ContractAddress, token_id: u256) {
@@ -182,6 +200,15 @@ mod Exercise3 {
 
         return 1;
     }
+
+    #[internal]
+    fn _approve(to: ContractAddress, token_id: u256) {
+        let owner = _owner_of(token_id);
+        assert(owner != to, 'ERC721: approval to owner');
+        _token_approvals::write(token_id, to);
+        Approval(owner, to, token_id);
+    }
+
     ////////////////////////////////
 
 }
